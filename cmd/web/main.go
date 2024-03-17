@@ -27,21 +27,13 @@ func main() {
 		infoLog:  infoLog,
 	}
 
-	mux := http.NewServeMux()
-
-	fileServer := http.FileServer(http.Dir("./ui/static/"))
-	mux.Handle("/static/", http.StripPrefix("/static/", fileServer))
-
-	mux.HandleFunc("/", app.home)
-	mux.HandleFunc("/snippet/view", app.snippetView)
-	mux.HandleFunc("/snippet/create", app.snippetCreate)
-
 	// Set a new http.server struct in order to make use of our new errorLog logger
 	// instead of the standard logger
 	srv := &http.Server{
 		Addr:     *addr,
 		ErrorLog: errorLog,
-		Handler:  mux,
+		// Call the new app.routes method to get the servemux containing our routes
+		Handler: app.routes(),
 	}
 
 	infoLog.Printf("Starting server on %s", *addr)
